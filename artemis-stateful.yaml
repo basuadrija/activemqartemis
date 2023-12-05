@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: artemis-stateful
+spec:
+  serviceName: artemis-headless-svc
+  replicas: 3
+  selector:
+    matchLabels:
+      app: artemis-stateful
+  template:
+    metadata:
+      labels:
+        app: artemis-stateful
+    spec:
+      containers:
+        - name: artemisinstallcontainer
+          image: artemis:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8161
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: PEER_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
